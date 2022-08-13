@@ -19,7 +19,7 @@ describe('Loan API', () =>{
             const loanIput = {
                 name: "",
                 dob: "2000-08-12",
-                city: "Bengluru",
+                city: "Bengaluru",
                 credit_score: 900,
                 loan_amount: 600000
             };
@@ -27,7 +27,7 @@ describe('Loan API', () =>{
                 .post("/api/get_loan")
                 .send(loanIput)
                 .end((err, response) => {
-                    response.should.have.status(200);
+                    response.should.have.status(400);
                     response.body.should.be.a('object');
                     response.body.should.have.property("message");
                     response.body.should.have.property("message").eq("\"name\" is not allowed to be empty");
@@ -42,16 +42,16 @@ describe('Loan API', () =>{
         it("It should retun validation error for invalid date of birth", (done) => {
             const loanIput = {
                 name: "john",
-                dob: "2022-08-12",
-                city: "Bengluru",
+                dob: "2022-09-31",
+                city: "Bengaluru",
                 credit_score: 900,
-                loan_amount: 600000
+                loan_amount: 500000
             };
             chai.request(server)                
                 .post("/api/get_loan")
                 .send(loanIput)
                 .end((err, response) => {
-                    response.should.have.status(200);
+                    response.should.have.status(400);
                     response.body.should.be.a('object');
                     response.body.should.have.property("message");
                     response.body.should.have.property("message").eq("Date of birth should be less than todays date");
@@ -66,7 +66,7 @@ describe('Loan API', () =>{
             const loanIput = {
                 name: "john",
                 dob: "2000-08-12",
-                city: "Bengluru",
+                city: "Bengaluru",
                 credit_score: 1000,
                 loan_amount: 600000
             };
@@ -74,7 +74,7 @@ describe('Loan API', () =>{
                 .post("/api/get_loan")
                 .send(loanIput)
                 .end((err, response) => {
-                    response.should.have.status(200);
+                    response.should.have.status(400);
                     response.body.should.be.a('object');
                     response.body.should.have.property("message");
                     response.body.should.have.property("message").eq("Credit score shoul be less than 900");
@@ -90,7 +90,7 @@ describe('Loan API', () =>{
                     const loanIput = {
                         name: "john",
                         dob: "2000-08-12",
-                        city: "Bengluru",
+                        city: "Bengaluru",
                         credit_score: 900,
                         loan_amount: 40000
                     };
@@ -98,7 +98,7 @@ describe('Loan API', () =>{
                         .post("/api/get_loan")
                         .send(loanIput)
                         .end((err, response) => {
-                            response.should.have.status(200);
+                            response.should.have.status(400);
                             response.body.should.be.a('object');
                             response.body.should.have.property("message");
                             response.body.should.have.property("message").eq("Loan amount should be greater than 50000");
@@ -115,7 +115,7 @@ describe('Loan API', () =>{
                     const loanIput = {
                         name: "john",
                         dob: "2000-08-12",
-                        city: "Bengluru",
+                        city: "Bengaluru",
                         credit_score: 900,
                         loan_amount: 600000
                     };
@@ -123,7 +123,7 @@ describe('Loan API', () =>{
                         .post("/api/get_loan")
                         .send(loanIput)
                         .end((err, response) => {
-                            response.should.have.status(200);
+                            response.should.have.status(400);
                             response.body.should.be.a('object');
                             response.body.should.have.property("message");
                             response.body.should.have.property("message").eq("Loan amount should be less than 500000");
@@ -139,7 +139,7 @@ describe('Loan API', () =>{
                     const loanIput = {
                         name: "john",
                         dob: "2010-08-12",
-                        city: "Bengluru",
+                        city: "Bengaluru",
                         credit_score: 900,
                         loan_amount: 500000
                     };
@@ -164,7 +164,7 @@ describe('Loan API', () =>{
                     const loanIput = {
                         name: "john",
                         dob: "1945-08-12",
-                        city: "Bengluru",
+                        city: "Bengaluru",
                         credit_score: 900,
                         loan_amount: 500000
                     };
@@ -187,8 +187,8 @@ describe('Loan API', () =>{
                 it("Apllication will reject due to low credit score (credit score should be greate than 300 for both Tier cities) ", (done) => {
                     const loanIput = {
                         name: "john",
-                        dob: "1995-08-12",
-                        city: "Bengluru",
+                        dob: "2000-08-12",
+                        city: "Bengaluru",
                         credit_score: 300,
                         loan_amount: 500000
                     };
@@ -232,7 +232,7 @@ describe('Loan API', () =>{
                 /**
                  * check response for Tier2 city hubli.
                  */
-                it("Show the response with Approved Loan details for Tier2 City Hubli. Request details => {name: "/john/",dob: "/1995-08-12/",city: "/Hubli/",credit_score: 850,loan_amount: 200000}", (done) => {
+                it("Show the response with Approved Loan details for Tier2 City Hubli. Request details city = hubli, credit_score = 850, loan_amount: 200000", (done) => {
                     const loanIput = {
                         name: "john",
                         dob: "1995-08-12",
@@ -247,38 +247,11 @@ describe('Loan API', () =>{
                             response.should.have.status(200);
                             response.body.should.be.a('object');
                             response.body.should.have.property("ApplicationStaus");
-                            response.body.should.have.property("ApplicationStaus").eq("Apporve");
+                            response.body.should.have.property("ApplicationStaus").eq("Approve");
                             response.body.should.have.property("RateOfInterest");
                             response.body.should.have.property("RateOfInterest").eq("11%");
                         done();
-                        //console.log(response.body);
-                        });
-                        
-                });
-
-                 /**
-                 * check response for Tier2 city hubli.
-                 */
-                it("Show the response with Approved Loan details for Tier1 City Bengaluru. Request details => {name: "/john/",dob: "/1995-08-12/",city: "/Bengaluru/",credit_score: 500,loan_amount: 500000}", (done) => {
-                    const loanIput = {
-                        name: "john",
-                        dob: "1995-08-12",
-                        city: "Bengaluru",
-                        credit_score: 500,
-                        loan_amount: 500000
-                    };
-                    chai.request(server)                
-                        .post("/api/get_loan")
-                        .send(loanIput)
-                        .end((err, response) => {
-                            response.should.have.status(200);
-                            response.body.should.be.a('object');
-                            response.body.should.have.property("ApplicationStaus");
-                            response.body.should.have.property("ApplicationStaus").eq("Apporve");
-                            response.body.should.have.property("RateOfInterest");
-                            response.body.should.have.property("RateOfInterest").eq("14%");
-                        done();
-                        //console.log(response.body);
+                        console.log(response.body);
                         });
                         
                 });
