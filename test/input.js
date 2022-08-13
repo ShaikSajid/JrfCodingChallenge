@@ -111,7 +111,7 @@ describe('Loan API', () =>{
                  * validation for maximum loan amount 
                  */
 
-                it("It should retun validation error for invalid minnimum loan amount", (done) => {
+                it("It should retun validation error for invalid maximum loan amount", (done) => {
                     const loanIput = {
                         name: "john",
                         dob: "2000-08-12",
@@ -131,6 +131,158 @@ describe('Loan API', () =>{
                         });
                         
                 });
+
+                /**
+                 * minimum age criteria
+                 */
+                it("Apllication rejected due to minimum age criteria (minimum age should be 18)", (done) => {
+                    const loanIput = {
+                        name: "john",
+                        dob: "2010-08-12",
+                        city: "Bengluru",
+                        credit_score: 900,
+                        loan_amount: 500000
+                    };
+                    chai.request(server)                
+                        .post("/api/get_loan")
+                        .send(loanIput)
+                        .end((err, response) => {
+                            response.should.have.status(400);
+                            response.body.should.be.a('object');
+                            response.body.should.have.property("message");
+                            response.body.should.have.property("message").eq("Application Rejected");
+                        done();
+                        });
+                        
+                });
+
+                /**
+                 * maximu age criteria  
+                 */
+
+                it("Apllication rejected due to maximum age criteria (maximum age should be 59)", (done) => {
+                    const loanIput = {
+                        name: "john",
+                        dob: "1945-08-12",
+                        city: "Bengluru",
+                        credit_score: 900,
+                        loan_amount: 500000
+                    };
+                    chai.request(server)                
+                        .post("/api/get_loan")
+                        .send(loanIput)
+                        .end((err, response) => {
+                            response.should.have.status(400);
+                            response.body.should.be.a('object');
+                            response.body.should.have.property("message");
+                            response.body.should.have.property("message").eq("Application Rejected");
+                        done();
+                        });
+                        
+                });
+
+                /**
+                 * Check for credit score criteria for both Tier citeis.
+                 */
+                it("Apllication will reject due to low credit score (credit score should be greate than 300 for both Tier cities) ", (done) => {
+                    const loanIput = {
+                        name: "john",
+                        dob: "1995-08-12",
+                        city: "Bengluru",
+                        credit_score: 300,
+                        loan_amount: 500000
+                    };
+                    chai.request(server)                
+                        .post("/api/get_loan")
+                        .send(loanIput)
+                        .end((err, response) => {
+                            response.should.have.status(400);
+                            response.body.should.be.a('object');
+                            response.body.should.have.property("message");
+                            response.body.should.have.property("message").eq("Application Rejected");
+                        done();
+                        });
+                        
+                });
+
+                /**
+                 * Check for credit score criteria for Tier 2 cities.
+                 */
+                it("Apllication will reject due to low credit score for Tier2 cities (credit score should be greate than 500 for both Tier2 cities) ", (done) => {
+                    const loanIput = {
+                        name: "john",
+                        dob: "1995-08-12",
+                        city: "Hubli",
+                        credit_score: 450,
+                        loan_amount: 500000
+                    };
+                    chai.request(server)                
+                        .post("/api/get_loan")
+                        .send(loanIput)
+                        .end((err, response) => {
+                            response.should.have.status(400);
+                            response.body.should.be.a('object');
+                            response.body.should.have.property("message");
+                            response.body.should.have.property("message").eq("Application Rejected");
+                        done();
+                        });
+                        
+                });
+
+                /**
+                 * check response for Tier2 city hubli.
+                 */
+                it("Show the response with Approved Loan details for Tier2 City Hubli. Request details => {name: "/john/",dob: "/1995-08-12/",city: "/Hubli/",credit_score: 850,loan_amount: 200000}", (done) => {
+                    const loanIput = {
+                        name: "john",
+                        dob: "1995-08-12",
+                        city: "Hubli",
+                        credit_score: 850,
+                        loan_amount: 200000
+                    };
+                    chai.request(server)                
+                        .post("/api/get_loan")
+                        .send(loanIput)
+                        .end((err, response) => {
+                            response.should.have.status(200);
+                            response.body.should.be.a('object');
+                            response.body.should.have.property("ApplicationStaus");
+                            response.body.should.have.property("ApplicationStaus").eq("Apporve");
+                            response.body.should.have.property("RateOfInterest");
+                            response.body.should.have.property("RateOfInterest").eq("11%");
+                        done();
+                        //console.log(response.body);
+                        });
+                        
+                });
+
+                 /**
+                 * check response for Tier2 city hubli.
+                 */
+                it("Show the response with Approved Loan details for Tier1 City Bengaluru. Request details => {name: "/john/",dob: "/1995-08-12/",city: "/Bengaluru/",credit_score: 500,loan_amount: 500000}", (done) => {
+                    const loanIput = {
+                        name: "john",
+                        dob: "1995-08-12",
+                        city: "Bengaluru",
+                        credit_score: 500,
+                        loan_amount: 500000
+                    };
+                    chai.request(server)                
+                        .post("/api/get_loan")
+                        .send(loanIput)
+                        .end((err, response) => {
+                            response.should.have.status(200);
+                            response.body.should.be.a('object');
+                            response.body.should.have.property("ApplicationStaus");
+                            response.body.should.have.property("ApplicationStaus").eq("Apporve");
+                            response.body.should.have.property("RateOfInterest");
+                            response.body.should.have.property("RateOfInterest").eq("14%");
+                        done();
+                        //console.log(response.body);
+                        });
+                        
+                });
+
 
     });
 })
